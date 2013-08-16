@@ -1,0 +1,96 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/static/css/workbench.css">
+        <style type="text/css">
+        .data_label {
+            margin-left: -8em;
+            float: left;
+        }
+        .data {
+            margin: .5em 0 0 8em;
+        }
+        .data p {
+            margin: 0;
+        }
+        .student_view {
+            margin: 1em;
+        }
+        </style>
+        <script>
+            // TODO: This should be handled more modularly.
+            window.student_id = '{{student_id}}';
+            var require = {
+                baseUrl: "/static",
+                paths: {
+                    "jquery": "js/vendor/jquery.min",
+                    "jquery.cookie": "js/vendor/jquery.cookie",
+                    "jquery.immediateDescendents": "js/lib/jquery.immediateDescendents",
+                    "xblock": "js/lib/xblock",
+                    "underscore": "js/vendor/underscore-min",
+                    "backbone": "js/vendor/backbone-min"
+                },
+                shim: {
+                    "jquery.cookie": {
+                        deps: ["jquery"],
+                        exports: "jQuery.fn.cookie"
+                    },
+                    "underscore": {exports: "_"},
+                    "backbone": {
+                        deps: ["underscore", "jquery"],
+                        exports: "Backbone"
+                    }
+                },
+                packages: [
+                    {name: "thumbs", location: "/resource/thumbs/js/src"}
+                ]
+            }
+        </script>
+        <script src="/static/js/vendor/require.js"></script>
+        {{head_html|safe}}
+        {# TODO: clearly, "thumbs" will need to be replaced with dynamic output #}
+        <script>
+        require(["require", "jquery", "xblock", "jquery.cookie", "thumbs"],
+                function(require, $, XBlock) {
+            var Thumbs = require("thumbs");
+            $(function() {
+                $('body').on('ajaxSend', function(elm, xhr, s) {
+                    // Pass along the Django-specific CSRF token.
+                    xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+                });
+
+                XBlock.initializeBlocks($('body'), {thumbs: Thumbs});
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <header>
+            <h1>XBlock: {{scenario.description}}</h1>
+        </header>
+        <section class="main">
+            <div class="student_view">
+                {{body|safe}}
+            </div>
+            <hr />
+            <div class="data">
+                <span class="data_label">Log</span>
+                {{log|safe}}
+                &nbsp;
+            </div>
+            <div class="data">
+                <span class="data_label">Database</span>
+                {{database.as_html|safe}}
+                &nbsp;
+            </div>
+            <div class="data">
+                <span class="data_label">Usage</span>
+                {{usage}}
+            </div>
+            <div class="data">
+                <span class="data_label">Block</span>
+                {{block}}
+            </div>
+        </section>
+    {{foot_html|safe}}
+    </body>
+</html>

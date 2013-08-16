@@ -47,7 +47,7 @@ class Fragment(object):
         """
         Returns a new Fragment from a `pods`.
 
-        `pods` is a Plain Old Data Structure, a Python dictionary with
+        :param pods: a Plain Old Data Structure, a Python dictionary with
         keys `content`, `resources`, and `js_init`
 
         """
@@ -80,11 +80,11 @@ class Fragment(object):
         Other helpers, such as :func:`add_css` or :func:`add_javascript` are
         more convenient for those common types of resource.
 
-        `text`: the actual text of this resource, as a unicode string.
+        :param text: the actual text of this resource, as a unicode string.
 
-        `mimetype`: the MIME type of the resource.
+        :param mimetype: the MIME type of the resource.
 
-        `placement`: where on the page the resource should be placed:
+        :param placement: where on the page the resource should be placed:
 
             None: let the Fragment choose based on the MIME type.
 
@@ -106,7 +106,7 @@ class Fragment(object):
         :func:`add_javascript_url` are more convenent for those common types of
         resource.
 
-        `url`: the URL to the resource.
+        :param url: the URL to the resource.
 
         Other parameters are as defined for :func:`add_resource`.
 
@@ -130,6 +130,22 @@ class Fragment(object):
     def add_javascript_url(self, url):
         """Add a Javascript URL to the Fragment."""
         self.add_resource_url(url, 'application/javascript')
+
+    def add_javascript_resource(self, url, name, export=None, varname=None):
+        """
+        Register a Javascript library to be loaded via requirejs.
+
+        :param url: The URL to the library. May be a CDN URL.
+        :param name: The name that your Javascript uses to refer to the library.
+            Typically short, all lowercase.
+        :param export: The name of the global variable that the library provides,
+            such as "jQuery" or "Backbone". Not required for libraries that are
+            already requirejs-aware.
+        :param varname: The default variable name that you would normally use
+            when referencing the already-loaded module, such as "$" or "_".
+            Defaults to the value of `export`.
+        """
+        pass
 
     def add_frag_resources(self, frag):
         """Add all the resources from `frag` to my resources.

@@ -58,7 +58,7 @@ def index(_request):
 
 
 @ensure_csrf_cookie
-def show_scenario(request, scenario_id, view_name='student_view', template='block.html'):
+def show_scenario(request, scenario_id, view_name='student_view', template='requirejs.html'):
     """
     Render the given `scenario_id` for the given `view_name`, on the provided `template`.
 

@@ -226,14 +226,14 @@ class WorkbenchRuntime(Runtime):
 
     def wrap_child(self, block, frag, context):  # pylint: disable=W0613
         wrapped = Fragment()
-        wrapped.add_javascript_url("/static/js/vendor/jquery.min.js")
-        wrapped.add_javascript_url("/static/js/vendor/jquery.cookie.js")
+        # wrapped.add_javascript_url("/static/js/vendor/jquery.min.js")
+        # wrapped.add_javascript_url("/static/js/vendor/jquery.cookie.js")
 
         data = {}
         if frag.js_init:
             func, version = frag.js_init
-            wrapped.add_javascript_url("/static/js/runtime/%s.js" % version)
-            data['init'] = func
+            # wrapped.add_javascript_url("/static/js/runtime/%s.js" % version)
+            # data['init'] = func
             data['runtime-version'] = version
             data['usage'] = self.usage.id
             data['block-type'] = self.block_cls.plugin_name

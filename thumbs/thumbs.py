@@ -41,9 +41,9 @@ class ThumbsBlock(InputBlock):
         css_str = pkg_resources.resource_string(__name__, "static/css/thumbs.css")
         frag.add_css(unicode(css_str))
 
-        js_str = pkg_resources.resource_string(__name__,
-                                               "static/js/src/thumbs.js")
-        frag.add_javascript(unicode(js_str))
+        #js_str = pkg_resources.resource_string(__name__,
+        #                                       "static/js/src/thumbs.js")
+        #frag.add_javascript(unicode(js_str))
 
         frag.initialize_js('ThumbsBlock')
         return frag
