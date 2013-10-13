@@ -8,7 +8,7 @@ from mock import Mock
 from xblock.core import XBlock
 from xblock.fields import BlockScope, Scope, String, ScopeIds, Integer, List, UserScope, XBlockMixin, Integer
 from xblock.exceptions import NoSuchViewError, NoSuchHandlerError
-from xblock.runtime import KeyValueStore, DictKeyValueStore, DbModel, Runtime, ObjectAggregator, Mixologist
+from xblock.runtime import KeyValueStore, DictKeyValueStore, KvsFieldData, Runtime, ObjectAggregator, Mixologist
 from xblock.fragment import Fragment
 from xblock.field_data import DictFieldData
 
@@ -110,7 +110,7 @@ def test_db_model_keys():
     # Tests that updates to fields are properly recorded in the KeyValueStore,
     # and that the keys have been constructed correctly
     key_store = DictKeyValueStore()
-    db_model = DbModel(key_store)
+    db_model = KvsFieldData(key_store)
     runtime = Runtime(Mock(), db_model, [TestMixin])
     tester = runtime.construct_xblock_from_class(TestXBlock, ScopeIds('s0', 'TestXBlock', 'd0', 'u0'))
 
@@ -186,7 +186,7 @@ def test_runtime_handle():
     # Test a simple handler and a fallback handler
 
     key_store = DictKeyValueStore()
-    db_model = DbModel(key_store)
+    db_model = KvsFieldData(key_store)
     tester = TestXBlock(Mock(), db_model, Mock())
     runtime = MockRuntimeForQuerying()
     # string we want to update using the handler
@@ -210,7 +210,7 @@ def test_runtime_handle():
 
 def test_runtime_render():
     key_store = DictKeyValueStore()
-    db_model = DbModel(key_store)
+    db_model = KvsFieldData(key_store)
     runtime = MockRuntimeForQuerying()
     tester = TestXBlock(runtime, db_model, Mock())
     # string we want to update using the handler
@@ -259,7 +259,7 @@ class TestIntegerXblock(XBlock):
 
 def test_default_fn():
     key_store = SerialDefaultKVS()
-    db_model = DbModel(key_store)
+    db_model = KvsFieldData(key_store)
     tester = TestIntegerXblock(Mock(), db_model, Mock())
     tester2 = TestIntegerXblock(Mock(), db_model, Mock())
 
