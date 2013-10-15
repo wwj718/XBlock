@@ -102,6 +102,10 @@ NO_CACHE_VALUE = Sentinel("fields.NO_CACHE_VALUE")
 # because it was explicitly set
 EXPLICITLY_SET = Sentinel("fields.EXPLICITLY_SET")
 
+# Fields that cannot have defaults.  These are special, because they define
+# the structure of XBlock trees.
+NO_DEFAULT_FIELDS = ('parent', 'children')
+
 
 class Field(object):
     """
@@ -246,13 +250,14 @@ class Field(object):
         if value is NO_CACHE_VALUE:
             if xblock._field_data.has(xblock, self.name):
                 value = self.from_json(xblock._field_data.get(xblock, self.name))
-            else:
+            elif self.name not in NO_DEFAULT_FIELDS:
                 # Cache default value
                 try:
                     value = self.from_json(xblock._field_data.default(xblock, self.name))
                 except KeyError:
                     value = self.default
-
+            else:
+                value = self.default
             self._set_cached_value(xblock, value)
 
         # If this is a mutable type, mark it as dirty, since mutations can occur without an
