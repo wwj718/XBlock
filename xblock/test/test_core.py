@@ -748,3 +748,30 @@ def test_change_mutable_default():
     assert_equals([1], mutable_test_a._field_data.get(mutable_test_a, 'list_field'))
     with assert_raises(KeyError):
         mutable_test_b._field_data.get(mutable_test_b, 'list_field')
+
+
+def test_cached_parent():
+    class HasParent(XBlock):
+        pass
+
+    runtime = Mock()
+    block = HasParent(runtime, DictFieldData({}), Mock())
+
+    # block has no parent yet, and we don't need to call the runtime to find
+    # that out.
+    assert_equals(block.get_parent(), None)
+    assert not runtime.get_block.called
+
+    # Set a parent id for the block.  Get the parent.  Now we have one, and we
+    # used runtime.get_block to get it.
+    block.parent = "some_parent_id"
+    parent = block.get_parent()
+    assert_not_equals(parent, None)
+    assert runtime.get_block.called_with("some_parent_id")
+
+    # Get the parent again.  It will be the same parent, and we didn't call the
+    # runtime.
+    runtime.reset_mock()
+    parent2 = block.get_parent()
+    assert parent2 is parent
+    assert not runtime.get_block.called
