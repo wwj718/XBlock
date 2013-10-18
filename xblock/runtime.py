@@ -3,6 +3,7 @@ Machinery to make the common case easy when building new runtimes
 """
 
 import functools
+import itertools
 import re
 import threading
 
@@ -245,6 +246,44 @@ class UsageStore(object):
 
         """
         pass
+
+
+class MemoryUsageStore(UsageStore):
+    """A simple dict-based implementation of UsageStore."""
+
+    def __init__(self):
+        self._ids = itertools.count()
+        self._usages = {}
+        self._definitions = {}
+
+    def _next_id(self):
+        """Generate a new id."""
+        return str(next(self._ids))
+
+    def clear(self):
+        """Remove all entries."""
+        self._usages.clear()
+        self._definitions.clear()
+
+    def create_usage(self, def_id):
+        """Make a usage, storing its definition id."""
+        usage_id = self._next_id()
+        self._usages[usage_id] = def_id
+        return usage_id
+
+    def get_definition_id(self, usage_id):
+        """Get a definition_id by its usage id."""
+        return self._usages[usage_id]
+
+    def create_definition(self, block_type):
+        """Make a definition, storing its block type."""
+        def_id = self._next_id()
+        self._definitions[def_id] = block_type
+        return def_id
+
+    def get_block_type(self, def_id):
+        """Get a block_type by its definition id."""
+        return self._definitions[def_id]
 
 
 class Runtime(object):
