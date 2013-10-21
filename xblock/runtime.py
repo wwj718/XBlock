@@ -256,9 +256,9 @@ class MemoryUsageStore(UsageStore):
         self._usages = {}
         self._definitions = {}
 
-    def _next_id(self):
+    def _next_id(self, prefix):
         """Generate a new id."""
-        return str(next(self._ids))
+        return "{}_{}".format(prefix, next(self._ids))
 
     def clear(self):
         """Remove all entries."""
@@ -267,7 +267,7 @@ class MemoryUsageStore(UsageStore):
 
     def create_usage(self, def_id):
         """Make a usage, storing its definition id."""
-        usage_id = self._next_id()
+        usage_id = self._next_id("u")
         self._usages[usage_id] = def_id
         return usage_id
 
@@ -277,7 +277,7 @@ class MemoryUsageStore(UsageStore):
 
     def create_definition(self, block_type):
         """Make a definition, storing its block type."""
-        def_id = self._next_id()
+        def_id = self._next_id("d")
         self._definitions[def_id] = block_type
         return def_id
 
