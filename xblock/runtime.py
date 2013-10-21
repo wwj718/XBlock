@@ -297,10 +297,12 @@ class Runtime(object):
             created by this `Runtime`
         :type mixins: `tuple` of `class`es
         """
-        self._view_name = None
-        self.mixologist = Mixologist(mixins)
         self.usage_store = usage_store
         self.field_data = field_data
+
+        self.user_id = None
+        self.mixologist = Mixologist(mixins)
+        self._view_name = None
 
     # Block operations
 
@@ -338,7 +340,7 @@ class Runtime(object):
         """
         def_id = self.usage_store.get_definition_id(usage_id)
         block_type = self.usage_store.get_block_type(def_id)
-        keys = ScopeIds(self.student_id, block_type, def_id, usage_id)
+        keys = ScopeIds(self.user_id, block_type, def_id, usage_id)
         block = self.construct_xblock(block_type, keys)
         return block
 

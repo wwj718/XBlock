@@ -106,9 +106,9 @@ class WorkbenchRuntime(Runtime):
 
     """
 
-    def __init__(self, student_id=None):
+    def __init__(self, user_id=None):
         super(WorkbenchRuntime, self).__init__(USAGE_STORE, KvsFieldData(WORKBENCH_KVS))
-        self.student_id = student_id
+        self.user_id = user_id
 
     def render(self, block, view_name, context=None):
         try:
