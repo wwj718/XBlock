@@ -110,19 +110,6 @@ class WorkbenchRuntime(Runtime):
         super(WorkbenchRuntime, self).__init__(USAGE_STORE, KvsFieldData(WORKBENCH_KVS))
         self.student_id = student_id
 
-    def get_block(self, usage_id):
-        """
-        Create an XBlock instance in this runtime.
-
-        The `usage_id` is used to find the XBlock class and data.
-
-        """
-        def_id = self.usage_store.get_definition_id(usage_id)
-        block_type = self.usage_store.get_block_type(def_id)
-        keys = ScopeIds(self.student_id, block_type, def_id, usage_id)
-        block = self.construct_xblock(block_type, keys)
-        return block
-
     def render(self, block, view_name, context=None):
         try:
             return super(WorkbenchRuntime, self).render(block, view_name, context)
