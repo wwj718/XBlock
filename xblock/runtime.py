@@ -328,12 +328,24 @@ class Runtime(object):
 
     # Block operations
 
+    def load_class(self, block_type, default_class=None):
+        """
+        Load a block class to use to make blocks.
+
+        `block_type` is a slug used to find the class, for example, with
+        :class:`~xblock.plugin.Plugin.load_class`.
+
+        `default_class` is a class to use if nothing else can be found.
+
+        """
+        return XBlock.load_class(block_type, default_class)
+
     def construct_xblock(self, block_type, scope_ids, field_data=None, default_class=None, *args, **kwargs):
         """
         Construct a new xblock of the type identified by block_type,
         passing *args and **kwargs into __init__
         """
-        block_class = XBlock.load_class(block_type, default_class)
+        block_class = self.load_class(block_type, default_class)
         return self.construct_xblock_from_class(
             cls=block_class,
             scope_ids=scope_ids,
@@ -394,7 +406,7 @@ class Runtime(object):
         def_id = self.usage_store.create_definition(block_type)
         usage_id = self.usage_store.create_usage(def_id)
         keys = ScopeIds(UserScope.NONE, block_type, def_id, usage_id)
-        block_class = self.mixologist.mix(XBlock.load_class(block_type))
+        block_class = self.mixologist.mix(self.load_class(block_type))
         block = block_class.parse_xml(node, self, keys)
         block.parent = parent_id
         block.save()
