@@ -212,6 +212,16 @@ class KvsFieldData(FieldData):
 DbModel = KvsFieldData                                  # pylint: disable=C0103
 
 
+class NoSuchUsage(Exception):
+    """Raised by UsageStore.get_definition_id if the usage doesn't exist."""
+    pass
+
+
+class NoSuchDefinition(Exception):
+    """Raised by UsageStore.get_block_type if the definition doesn't exist."""
+    pass
+
+
 class UsageStore(object):
     """An abstract object that stores usages and definitions."""
 
@@ -273,7 +283,10 @@ class MemoryUsageStore(UsageStore):
 
     def get_definition_id(self, usage_id):
         """Get a definition_id by its usage id."""
-        return self._usages[usage_id]
+        try:
+            return self._usages[usage_id]
+        except KeyError:
+            raise NoSuchUsage(repr(usage_id))
 
     def create_definition(self, block_type):
         """Make a definition, storing its block type."""
@@ -283,7 +296,10 @@ class MemoryUsageStore(UsageStore):
 
     def get_block_type(self, def_id):
         """Get a block_type by its definition id."""
-        return self._definitions[def_id]
+        try:
+            return self._definitions[def_id]
+        except KeyError:
+            raise NoSuchDefinition(repr(def_id))
 
 
 class Runtime(object):
@@ -339,7 +355,10 @@ class Runtime(object):
 
         """
         def_id = self.usage_store.get_definition_id(usage_id)
-        block_type = self.usage_store.get_block_type(def_id)
+        try:
+            block_type = self.usage_store.get_block_type(def_id)
+        except NoSuchDefinition:
+            raise NoSuchUsage(repr(usage_id))
         keys = ScopeIds(self.user_id, block_type, def_id, usage_id)
         block = self.construct_xblock(block_type, keys)
         return block
