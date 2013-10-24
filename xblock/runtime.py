@@ -241,8 +241,11 @@ class UsageStore(object):
         """
         pass
 
-    def create_definition(self, block_type):
+    def create_definition(self, block_type, slug=None):
         """Make a definition, storing its block type.
+
+        If `slug` is provided, it is a suggestion that the definition id
+        incorporate the slug somehow.
 
         Returns the newly-created definition id.
 
@@ -288,9 +291,12 @@ class MemoryUsageStore(UsageStore):
         except KeyError:
             raise NoSuchUsage(repr(usage_id))
 
-    def create_definition(self, block_type):
+    def create_definition(self, block_type, slug=None):
         """Make a definition, storing its block type."""
-        def_id = self._next_id("d")
+        prefix = "d"
+        if slug:
+            prefix += "_" + slug
+        def_id = self._next_id(prefix)
         self._definitions[def_id] = block_type
         return def_id
 
