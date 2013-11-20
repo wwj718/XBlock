@@ -4,7 +4,7 @@ import webob
 from collections import MutableMapping
 from lazy import lazy
 from itertools import chain, repeat, izip
-from webob.multidict import MultiDict, NoVars
+from webob.multidict import MultiDict, NestedMultiDict, NoVars
 
 
 def webob_to_django_response(webob_response):
@@ -67,13 +67,39 @@ class HeaderDict(MutableMapping):
         return len(list(self))
 
 
-def querydict_to_multidict(query_dict):
+def querydict_to_multidict(query_dict, wrap=None):
     """
-    Returns a new `webob.MultiDict` from a `django.http.QueryDict`
+    Returns a new `webob.MultiDict` from a `django.http.QueryDict`.
+
+    If `wrap` is provided, it's used to wrap the values.
+
     """
+    wrap = wrap or (lambda val: val)
     return MultiDict(chain.from_iterable(
-        izip(repeat(key), vals) for key, vals in query_dict.iterlists()
+        izip(repeat(key), (wrap(v) for v in vals))
+        for key, vals in query_dict.iterlists()
     ))
+
+
+class DjangoUploadedFile(object):
+    """
+    Looks like a FieldStorage, but wraps a Django UploadedFile.
+    """
+    def __init__(self, uploaded):
+        self.uploaded = uploaded
+
+    def __getattr__(self, name):
+        return getattr(self.uploaded, name)
+
+    @property
+    def name(self):
+        """The name of the input element used to upload the file."""
+        return self.uploaded.field_name
+
+    @property
+    def filename(self):
+        """The name of the uploaded file."""
+        return self.uploaded.name
 
 
 class DjangoWebobRequest(webob.Request):
@@ -102,7 +128,10 @@ class DjangoWebobRequest(webob.Request):
         if self.method not in ('POST', 'PUT', 'PATCH'):
             return NoVars('Not a form request')
 
-        return querydict_to_multidict(self._request.POST)
+        return NestedMultiDict(
+            querydict_to_multidict(self._request.POST),
+            querydict_to_multidict(self._request.FILES, wrap=DjangoUploadedFile),
+        )
 
     @lazy
     def body(self):
