@@ -4,6 +4,7 @@ Code in this file is a mix of Runtime layer and Workbench layer.
 
 """
 
+import importlib
 import logging
 
 try:
@@ -15,6 +16,8 @@ from django.core.urlresolvers import reverse
 from django.templatetags.static import static
 from django.template import loader as django_template_loader, \
     Context as DjangoContext
+
+from django.conf import settings
 
 from xblock.fields import Scope, ScopeIds
 from xblock.runtime import KvsFieldData, KeyValueStore, Runtime, NoSuchViewError, MemoryIdManager
@@ -246,7 +249,17 @@ class _BlockSet(object):
 
 
 # Our global state (the "database").
-WORKBENCH_KVS = WorkbenchKeyValueStore({})
+try: 
+    kvs = settings.WORKBENCH_KVS
+    WORKBENCH_KVS = getattr(importlib.import_module(kvs['module']), kvs['class'])(*kvs.get('parameters', []))
+    print "Database from settings"
+except AttributeError:
+    print "In-memory DB"
+    import sys
+    if str(sys.exc_info()[1]) == "'Settings' object has no attribute 'WORKBENCH_KVS'":
+        WORKBENCH_KVS = WorkbenchKeyValueStore({})
+    else: 
+        raise
 
 # Our global id manager
 ID_MANAGER = MemoryIdManager()
