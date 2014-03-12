@@ -393,12 +393,14 @@ class Runtime(object):
         has_score to True, and should publish a grade event whenever the grade
         changes.
 
-        In this case `event` would be a dictionary of the following form:
+        In this case `event` would be a dictionary of the following form::
+
             {
                 'event_type': 'grade',
                 'value': <number>,
                 'max_value': <number>,
             }
+
         The grade event represents a grade of value/max_value for the current
         user.
 
@@ -413,22 +415,24 @@ class Runtime(object):
             id_reader (IdReader): An object that allows the `Runtime` to
                 map between *usage_ids*, *definition_ids*, and *block_types*.
 
-            field_data (FieldData): The :class:`.FieldData` to use by default when
-                constructing an :class:`.XBlock` from this `Runtime`.
+            field_data (FieldData): The :class:`.FieldData` to use by default
+                when constructing an :class:`.XBlock` from this `Runtime`.
 
-            mixins (tuple): Classes that should be mixed in with every :class:`.XBlock`
-                created by this `Runtime`.
+            mixins (tuple): Classes that should be mixed in with every
+                :class:`.XBlock` created by this `Runtime`.
 
             services (dictionary): Services to make available through the
                 :meth:`service` method.  There's no point passing anything here
                 if you are overriding :meth:`service` in your sub-class.
 
-            default_class (class): The default class to use if a class can't be found for a
-                particular `block_type` when loading an :class:`.XBlock`.
+            default_class (class): The default class to use if a class can't be
+                found for a particular `block_type` when loading an
+                :class:`.XBlock`.
 
-            select: A function to select from one or more :class:`.XBlock` subtypes found
-                when calling :meth:`.XBlock.load_class` to resolve a `block_type`.
-                This is the same `select` as used by :meth:`.Plugin.load_class`.
+            select: A function to select from one or more :class:`.XBlock`
+                subtypes found when calling :meth:`.XBlock.load_class` to
+                resolve a `block_type`.  This is the same `select` as used by
+                :meth:`.Plugin.load_class`.
 
         """
         self.id_reader = id_reader
