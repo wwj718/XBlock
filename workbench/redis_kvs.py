@@ -57,7 +57,9 @@ class RedisKeyValueStore(KeyValueStore):
     # KeyValueStore methods.
 
     def get(self, key):
-        return json.loads(self.db_dict[self._actual_key(key)])[key.field_name]
+        r = json.loads(self.db_dict[self._actual_key(key)])[key.field_name]
+        print key, r
+        return r
 
     def set(self, key, value):
         """Sets the key to the new value"""

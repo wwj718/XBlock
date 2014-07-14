@@ -4,11 +4,11 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ## For use of Redis persistent store. 
-#WORKBENCH_KVS = {
-#    'module':'workbench.redis_kvs', 
-#    'class':'RedisKeyValueStore', 
-#    'parameters':[]
-#    }
+WORKBENCH_KVS = {
+    'module':'workbench.redis_kvs', 
+    'class':'RedisKeyValueStore', 
+    'parameters':[]
+    }
 
 # The variable doesn't seem to actually get interpolated in
 TEMPLATE_STRING_IF_INVALID = "<MISSING VARIABLE '%s'>"

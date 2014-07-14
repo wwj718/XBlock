@@ -40,12 +40,31 @@ setup_logging()
 
 log = logging.getLogger(__name__)
 
+def make_student_id():
+    fnames = ["Jacob","Mason","Ethan","Noah","William","Liam","Jayden","Michael",
+             "Alexander","Aiden","Daniel","Matthew","Elijah","James","Anthony",
+             "Benjamin","Joshua","Andrew","David","Joseph","Sophia","Emma","Isabella",
+             "Olivia","Ava","Emily","Abigail","Mia","Madison","Elizabeth","Chloe",
+             "Ella","Avery","Addison","Aubrey","Lily","Natalie","Sofia","Charlotte","Zoey"]
+    lnames = ["Smith","Johnson","Williams","Jones","Brown","Davis","Miller","Wilson","Moore",
+              "Taylor","Anderson","Thomas","Jackson","White","Harris","Martin","Thompson",
+              "Garcia","Martinez","Robinson","Clark","Rodriguez","Lewis","Lee","Walker",
+              "Hall","Allen","Young","Hernandez","King","Wright","Lopez","Hill","Scott",
+              "Green","Adams","Baker","Gonzalez","Nelson","Carter","Mitchell","Perez",
+              "Roberts","Turner","Phillips","Campbell","Parker"]
+    return fnames[random.randint(0,len(fnames))]+' '+fnames[random.randint(0,len(fnames))]+' '+lnames[random.randint(0,len(lnames))]
 
 # We don't really have authentication and multiple students, just accept their
 # id on the URL.
 def get_student_id(request):
     """Get the student_id from the given request."""
-    student_id = request.GET.get('student', 'student_1')
+    
+    student_id = request.GET.get('student', None)
+    if not student_id:
+        student_id = request.session.get('student_id', None)
+    if not student_id:
+        student_id = make_student_id()
+    request.session['student_id'] = student_id
     return student_id
 
 
@@ -81,6 +100,8 @@ def show_scenario(request, scenario_id, view_name='student_view', template='work
     block = runtime.get_block(usage_id)
     frag = block.render(view_name)
     log.info("End show_scenario %s", scenario_id)
+    g = globals()
+    print "\n".join([str((k, g[k])) for k in g if 'function' not in str(g[k])])
     return render_to_response(template, {
         'scenario': scenario,
         'block': block,
