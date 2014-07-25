@@ -444,6 +444,8 @@ class Field(object):
         Called during field reads to convert the stored value into a full featured python
         object
         """
+        if not isinstance(self, JSONField):
+            logging.warn("Deprecated. JSONifiable fields should derive from JSONField")
         return value
 
     def read_from(self, xblock):
@@ -456,6 +458,8 @@ class Field(object):
         """
         Retrieve the serialized value for this field from the specified xblock
         """
+        if not isinstance(self, JSONField):
+            logging.warn("Deprecated. JSONifiable fields should derive from JSONField")
         return self.to_json(self.read_from(xblock))
 
     def write_to(self, xblock, value):
@@ -480,6 +484,11 @@ class Field(object):
     def __hash__(self):
         return hash(self.name)
 
+
+class JSONField(Field):
+    ''' Field type which has a convenient JSON representation. 
+    '''
+    jsonifiable = True
 
 class Filesystem(Field):
     '''
@@ -521,7 +530,7 @@ class Filesystem(Field):
         raise NotImplementedError
 
 
-class Integer(Field):
+class Integer(JSONField):
     """
     A field that contains an integer.
 
@@ -541,7 +550,7 @@ class Integer(Field):
         return int(value)
 
 
-class Float(Field):
+class Float(JSONField):
     """
     A field that contains a float.
 
@@ -558,7 +567,7 @@ class Float(Field):
         return float(value)
 
 
-class Boolean(Field):
+class Boolean(JSONField):
     """
     A field class for representing a boolean.
 
@@ -595,7 +604,7 @@ class Boolean(Field):
             return bool(value)
 
 
-class Dict(Field):
+class Dict(JSONField):
     """
     A field class for representing a Python dict.
 
@@ -611,7 +620,7 @@ class Dict(Field):
             raise TypeError('Value stored in a Dict must be None or a dict, found %s' % type(value))
 
 
-class List(Field):
+class List(JSONField):
     """
     A field class for representing a list.
 
@@ -627,7 +636,7 @@ class List(Field):
             raise TypeError('Value stored in a List must be None or a list, found %s' % type(value))
 
 
-class String(Field):
+class String(JSONField):
     """
     A field class for representing a string.
 
@@ -643,7 +652,7 @@ class String(Field):
             raise TypeError('Value stored in a String must be None or a string, found %s' % type(value))
 
 
-class DateTime(Field):
+class DateTime(JSONField):
     """
     A field for representing a datetime.
 
@@ -690,7 +699,7 @@ class DateTime(Field):
         raise TypeError("Value stored must be a datetime object, not {}".format(type(value)))
 
 
-class Any(Field):
+class Any(JSONField):
     """
     A field class for representing any piece of data; type is not enforced.
 
@@ -700,7 +709,7 @@ class Any(Field):
     pass
 
 
-class Reference(Field):
+class Reference(JSONField):
     """
     An xblock reference. That is, a pointer to another xblock.
 
