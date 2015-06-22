@@ -175,10 +175,12 @@ class UniversalProperties(object):
 
     def test_set_after_get_doesnt_save(self):
         self.set(self.get())
+        # pylint: disable=protected-access
         fields_to_save = self.block._get_fields_to_save()
         assert_equals(len(fields_to_save), 0)
 
         self.set(self.new_value)
+        # pylint: disable=protected-access
         fields_to_save = self.block._get_fields_to_save()
         assert_equals(len(fields_to_save), 1)
 
