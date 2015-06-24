@@ -503,7 +503,14 @@ class Field(Nameable):
         we're trying to cache, we won't do anything.
         """
         value = self._check_or_enforce_type(value)
-        if self._get_cached_value(xblock) != value:
+        cached_value = self._get_cached_value(xblock)
+        try:
+            value_has_changed = cached_value != value
+        except Exception:  # pylint: disable=broad-except
+            # if we can't compare the values for whatever reason
+            # (i.e. timezone aware and unaware datetimes), just reset the value.
+            value_has_changed = True
+        if value_has_changed:
             # Mark the field as dirty and update the cache
             self._mark_dirty(xblock, EXPLICITLY_SET)
             self._set_cached_value(xblock, value)

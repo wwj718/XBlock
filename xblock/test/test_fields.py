@@ -27,7 +27,7 @@ from xblock.fields import (
 )
 
 from xblock.test.tools import (
-    assert_equals, assert_not_equals, assert_in, assert_not_in, assert_false, assert_true, TestRuntime
+    assert_equals, assert_not_equals, assert_in, assert_not_in, assert_false, TestRuntime
 )
 from xblock.fields import scope_key, ScopeIds
 
@@ -512,6 +512,22 @@ def test_values_dict():
     # Test that the format expected for integers is allowed
     test_field = Integer(values={"min": 1, "max": 100})
     assert_equals({"min": 1, "max": 100}, test_field.values)
+
+
+def test_set_incomparable_fields():
+    # if we can't compare a field's value to the value it's going to be reset to
+    # (i.e. timezone aware and unaware datetimes), just reset the value.
+
+    class FieldTester(XBlock):
+        incomparable = Field(scope=Scope.settings)
+
+    not_timezone_aware = dt.datetime(2015, 1, 1)
+    timezone_aware = dt.datetime(2015, 1, 1, tzinfo=pytz.UTC)
+    runtime = TestRuntime(services={'field-data': DictFieldData({})})
+    field_tester = FieldTester(runtime, scope_ids=Mock(spec=ScopeIds))
+    field_tester.incomparable = not_timezone_aware
+    field_tester.incomparable = timezone_aware
+    assert_equals(field_tester.incomparable, timezone_aware)
 
 
 def test_twofaced_field_access():
