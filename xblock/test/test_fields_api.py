@@ -220,6 +220,16 @@ class MutationProperties(object):
         self.mutate(self.get())
         assert_false(self.is_default())
 
+    def test_mutate_pointer_after_save(self):
+
+        pointer = self.get()
+        self.mutate(pointer)
+        self.block.save()
+
+        self.mutate(pointer)
+        self.block.save()
+        assert_equals(pointer, self.field_data.get(self.block, 'field'))
+
 
 class InitialValueProperties(object):
     """
