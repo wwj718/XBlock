@@ -221,11 +221,18 @@ class MutationProperties(object):
         assert_false(self.is_default())
 
     def test_mutate_pointer_after_save(self):
-
         pointer = self.get()
         self.mutate(pointer)
         self.block.save()
 
+        self.mutate(pointer)
+        self.block.save()
+        assert_equals(pointer, self.field_data.get(self.block, 'field'))
+
+    def test_set_save_mutate_save(self):
+        pointer = self.new_value
+        self.set(pointer)
+        self.block.save()
         self.mutate(pointer)
         self.block.save()
         assert_equals(pointer, self.field_data.get(self.block, 'field'))
